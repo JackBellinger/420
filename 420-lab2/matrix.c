@@ -41,7 +41,90 @@ void print_array(int A[], int size)
 }
 void addMatrix(matrix* A, matrix* B, matrix* result)
 {
+	if( A->rows != B->rows || A->cols != B->cols)
+	{
+		printf("Operation not possible with those matricies");
+	}
+	else
+	{
+		MPI_Comm world = MPI_COMM_WORLD;
+		int rank, world_size;
+		MPI_Comm_rank(world, &rank);
+		MPI_Comm_size(world, &world_size);
 
+		int array_size = A->rows * A->cols;
+		int chunk_size = array_size / (world_size);
+		int leftovers = (array_size % world_size) + chunk_size;
+
+		int send_counts[world_size];
+		int displs[world_size];
+
+		int i;
+		for( i = 0; i < world_size; i++ )
+		{
+			printf("chunking\n");
+			displs[i] = i * (chunk_size);
+			if( i == world_size - 1)
+				send_counts[i] = leftovers;
+			else
+				send_counts[i] = chunk_size;
+		}
+
+		int recieve_array1[send_counts[rank]];
+		for( i = 0; i < send_counts[rank]; i++ )
+			recieve_array1[i] = 0;
+
+		int recieve_array2[send_counts[rank]];
+		for( i = 0; i < send_counts[rank]; i++ )
+			recieve_array2[i] = 0;
+
+		printf("scattering\n");
+		MPI_Scatterv(
+			&(A->arr),
+			send_counts,
+			displs,
+			MPI_INT,
+			&recieve_array1,
+			send_counts[rank],
+			MPI_INT,
+			0,
+			world
+		);
+
+		MPI_Scatterv(
+			&(B->arr),
+			send_counts,
+			displs,
+			MPI_INT,
+			&recieve_array2,
+			send_counts[rank],
+			MPI_INT,
+			0,
+			world
+		);
+
+		// printf("chunked array at node %d\n", rank);
+		// print_array(recieve_array1, send_counts[rank]);
+		// print_array(recieve_array2, send_counts[rank]);
+
+		for( i = 0; i < send_counts[rank]; i++)
+			recieve_array1[i] += recieve_array2[i];
+
+		printf("gathering\n");
+		print_array(recieve_array1, send_counts[rank]);
+		MPI_Gatherv(
+			&recieve_array1,
+			send_counts[rank],
+			MPI_INT,
+			&(result->arr),
+			send_counts,
+			displs,
+			MPI_INT,
+			0,
+			world
+		);
+
+	}
 
 }
 int main(){
