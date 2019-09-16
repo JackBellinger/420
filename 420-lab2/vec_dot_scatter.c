@@ -65,11 +65,11 @@ int main(int argc, char** argv){
 		recieve_array2[i] = 0;
 
 	MPI_Scatterv(
-		&arr1,
+		arr1,
 		send_counts,
 		displs,
 		MPI_INT,
-		&recieve_array1,
+		recieve_array1,
 		send_counts[rank],
 		MPI_INT,
 		0,
@@ -77,11 +77,11 @@ int main(int argc, char** argv){
 	);
 
 	MPI_Scatterv(
-		&arr2,
+		arr2,
 		send_counts,
 		displs,
 		MPI_INT,
-		&recieve_array2,
+		recieve_array2,
 		send_counts[rank],
 		MPI_INT,
 		0,
