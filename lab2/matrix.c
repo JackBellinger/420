@@ -223,6 +223,7 @@ void mat_subtract(mat_* A, mat_* B, mat_* result)
 
 void mat_multiply(mat_* A, mat_* B, mat_* C){
 
+
 	MPI_Comm world = MPI_COMM_WORLD;
 	int rank, world_size;
 	MPI_Comm_rank(world, &rank);
@@ -230,24 +231,25 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 
 
 	if(A->cols == B->rows && A->rows == B->cols && A->rows == C->rows && B->cols == C->cols){
-		int i,j,k;
+		int i,j,k,m;
 		int row[A->rows];
 		int col[A->rows];
-		for(i = 0; i < C->rows; i++){
+		for(m = 0; m < C->rows; m++){
+			//printf("Outer Loop:%d\n", rank);
+			//printf("i = %d, C -> rows = %d\n", i, C->rows);
 			for(j = 0; j < C->cols; j++){
+				//printf("Inner Loop%d\n", rank);
 				for(k = 0; k < A->rows; k++){
-					row[k] = A->arr[(i*A->cols)+k];
+					row[k] = A->arr[(m*A->cols)+k];
 					col[k] = B->arr[j+(k*A->cols)];
 				}
 				int array_size = A->rows;
-				int arr1 [array_size];
-				int arr2 [array_size];
 				int chunk_size = array_size / (world_size);
 				int leftovers = (array_size % world_size) + chunk_size;
 				int send_counts[world_size];
 				int displs[world_size];
 
-				for( i = 0; i < world_size; i++ ){
+				for(i = 0; i < world_size; i++){
 					displs[i] = i * (chunk_size);
 					if( i == world_size - 1)
 						send_counts[i] = leftovers;
@@ -255,17 +257,19 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 						send_counts[i] = chunk_size;
 				}
 				int recieve_array1[send_counts[rank]];
-				for( i = 0; i < send_counts[rank]; i++ )
+				for(i = 0; i < send_counts[rank]; i++ )
 					recieve_array1[i] = 0;
-					int recieve_array2[send_counts[rank]];
-				for( i = 0; i < send_counts[rank]; i++ )
+
+				int recieve_array2[send_counts[rank]];
+				for(i = 0; i < send_counts[rank]; i++ )
 					recieve_array2[i] = 0;
+
 				MPI_Scatterv(
-					&arr1,
+					row,
 					send_counts,
 					displs,
 					MPI_INT,
-					&recieve_array1,
+					recieve_array1,
 					send_counts[rank],
 					MPI_INT,
 					0,
@@ -273,16 +277,20 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 				);
 
 				MPI_Scatterv(
-					&arr2,
+					col,
 					send_counts,
 					displs,
 					MPI_INT,
-					&recieve_array2,
+					recieve_array2,
 					send_counts[rank],
 					MPI_INT,
 					0,
 					world
 				);
+				//printf("chunked arrays at node %d\n", rank);
+				//print_array(recieve_array1, send_counts[rank]);
+				//print_array(recieve_array2, send_counts[rank]);
+
 				int pip = 0;
 				for( i = 0; i < send_counts[rank]; i++)
 					pip += recieve_array1[i] * recieve_array2[i];
@@ -298,15 +306,17 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 					0,
 					world
 				);
-				//printf("After Reduce\n");
+				//if(rank == 0)
+					//printf("fip = %d\n", fip);
 
 
 				if(rank == 0)
-					ACCESS(C,i,j) = fip;
+					//printf("m = %d, j = %d, fip = %d\n", m, j, fip);
+					ACCESS(C,m,j) = fip;
 			}
 		}
 	}else{
-		printf("mat_ Multiplication is not valid on this set of matrices.\n");
+		printf("Matrix Multiplication is not valid on this set of matrices.\n");
 	}
 }//end mat_multipy
 
