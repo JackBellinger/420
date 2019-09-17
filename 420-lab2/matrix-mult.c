@@ -19,7 +19,7 @@ void initMatrix(matrix* A, int r, int c){
   int i,j;
   for(i=0; i<r; i++)
     for(j=0; j<c; j++)
-      ACCESS(A,i,j) = rand() % 100 + 1;
+      ACCESS(A,i,j) = i * r + j;//rand() % 100 + 1;
 }
 
 void printMatrix(matrix* A){
@@ -33,13 +33,13 @@ void printMatrix(matrix* A){
 }
 
 void multipyMatrix (matrix* A, matrix* B, matrix* C){
-	
+
 	MPI_Comm world = MPI_COMM_WORLD;
 	int rank, world_size;
 	MPI_Comm_rank(world, &rank);
 	MPI_Comm_size(world, &world_size);
 
-	
+
 	if(A->cols == B->rows && A->rows == B->cols && A->rows == C->rows && B->cols == C->cols){
 		int i,j,k;
 		int row[A->rows];
@@ -57,7 +57,7 @@ void multipyMatrix (matrix* A, matrix* B, matrix* C){
 				int leftovers = (array_size % world_size) + chunk_size;
 				int send_counts[world_size];
 				int displs[world_size];
-				
+
 				for( i = 0; i < world_size; i++ ){
 					displs[i] = i * (chunk_size);
 					if( i == world_size - 1)
@@ -97,9 +97,9 @@ void multipyMatrix (matrix* A, matrix* B, matrix* C){
 				int pip = 0;
 				for( i = 0; i < send_counts[rank]; i++)
 					pip += recieve_array1[i] * recieve_array2[i];
-				
+
 				int fip = 0;
-				printf("Before Reduce\n");
+				//printf("Before Reduce\n");
 				MPI_Reduce(
 					&pip,
 					&fip,
@@ -109,9 +109,9 @@ void multipyMatrix (matrix* A, matrix* B, matrix* C){
 					0,
 					world
 				);
-				printf("After Reduce\n");
+				//printf("After Reduce\n");
 
-				
+
 				if(rank == 0)
 					ACCESS(C,i,j) = fip;
 			}
@@ -139,34 +139,46 @@ int main(int argc, char** argv){
 	int rank, world_size;
 	MPI_Comm_rank(world, &rank);
 	MPI_Comm_size(world, &world_size);
-	
+
 	srand(time(0));
 
-	if(rank == 0){
-		struct matrix A;
-		initMatrix(&A, 3, 3);
+
+	struct matrix A;
+	initMatrix(&A, 3, 3);
+	if(rank == 0)
+	{
 		printMatrix(&A);
 		printf("\n");
-		
-		struct matrix B;
-		initMatrix(&B, 3, 3);
-		//printMatrix(&B);
-		//printf("\n");
-
-		struct matrix C;
-		initMatrix(&C, 3, 3);
-		
-		//multipyMatrix(&A, &B, &C);
-		//printMatrix(&C);
-		
-		transposeMatrix(&A);
-		printMatrix(&A);
-		
-		free(A.arr);
-		free(B.arr);
-		free(C.arr);
 	}
-	
+	struct matrix B;
+	initMatrix(&B, 3, 3);
+	if(rank == 0)
+	{
+		printMatrix(&B);
+		printf("\n");
+	}
+
+	struct matrix C;
+	initMatrix(&C, 3, 3);
+
+	multipyMatrix(&A, &B, &C);
+	if(rank == 0)
+	{
+		printf("Multiplication result:\n");
+		printMatrix(&C);
+	}
+
+	transposeMatrix(&A);
+	if(rank == 0)
+	{
+		printf("Transposed matrix A\n");
+		printMatrix(&A);
+	}
+
+	free(A.arr);
+	free(B.arr);
+	free(C.arr);
+
 	MPI_Finalize();
 	return 0;
 }
