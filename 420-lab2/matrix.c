@@ -19,7 +19,7 @@ void initMatrix(matrix* A, int r, int c){
 	int i,j;
 	for(i=0; i<r; i++)
 		for(j=0; j<c; j++)
-			ACCESS(A,i,j) = 1;//rand() % 100 + 1;
+			ACCESS(A,i,j) = i * r + j;//rand() % 100 + 1;
 }
 
 void printMatrix(matrix* A){
@@ -53,24 +53,25 @@ void addMatrix(matrix* A, matrix* B, matrix* result)
 		MPI_Comm_size(world, &world_size);
 
 		int array_size = A->rows * A->cols;
-		int chunk_size = array_size / (world_size - 1);
-		int leftovers = (array_size % world_size - 1) + chunk_size;
+		int chunk_size = array_size / (world_size);
+		int leftovers = (array_size % world_size) + chunk_size;
 
 		int send_counts[world_size];
 		int displs[world_size];
 
 		int i;
-		send_counts[0] = 0;
-		for( i = 1; i < world_size; i++ )
+		//send_counts[0] = 0;
+		printf("chunking\n");
+
+		for( i = 0; i < world_size; i++ )
 		{
-			printf("chunking\n");
 			displs[i] = i * (chunk_size);
 			if( i == world_size - 1)
 				send_counts[i] = leftovers;
 			else
 				send_counts[i] = chunk_size;
 		}
-
+		print_array(send_counts, world_size);
 		int recieve_array1[send_counts[rank]];
 		for( i = 0; i < send_counts[rank]; i++ )
 			recieve_array1[i] = 0;
