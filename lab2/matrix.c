@@ -1,17 +1,17 @@
 #include <stdlib.h> // rand
-#include <stdio.h> // puts, printf, etc
+#include <stdio.h> // puts, //printf, etc
 #include <time.h> // time
 #include <mpi.h> // mpi stuff
 
 #define INDEX(n,m,i,j) m*i + j
 #define ACCESS(A,i,j) A->arr[INDEX(A->rows, A->cols, i, j)]
 
-typedef struct mat_{
+typedef struct Matrix{
 	int rows, cols;
 	int* arr;
-} mat_;
+} Matrix;
 
-void mat_init(mat_* A, int r, int c){
+void mat_init(Matrix* A, int r, int c){
 	A->rows = r;
 	A->cols = c;
 	A->arr = malloc(r*c*sizeof(int));
@@ -19,16 +19,16 @@ void mat_init(mat_* A, int r, int c){
 	int i,j;
 	for(i=0; i<r; i++)
 		for(j=0; j<c; j++)
-			ACCESS(A,i,j) = i * r + j;//rand() % 100 + 1;
+			ACCESS(A,i,j) = rand() % 100 + 1;
 }
 
-void mat_print(mat_* A){
+void mat_print(Matrix* A){
 	int i,j;
 	for(i=0; i<A->rows; i++){
 		for(j=0; j<A->cols; j++){
 			printf("%d ", ACCESS(A,i,j));
 		}
-		//printf("\n");
+		printf("\n");
 		puts("");
 	}
 }
@@ -39,11 +39,11 @@ void print_array(int A[], int size)
 			printf("%d, ", A[i]);
 		printf("\n");
 }
-void mat_add(mat_* A, mat_* B, mat_* result)
+void mat_add(Matrix* A, Matrix* B, Matrix* result)
 {
 	if( A->rows != B->rows || A->cols != B->cols)
 	{
-		printf("Operation not possible with those matricies");
+		//printf("Operation not possible with those matricies");
 	}
 	else
 	{
@@ -61,7 +61,7 @@ void mat_add(mat_* A, mat_* B, mat_* result)
 
 		int i;
 		//send_counts[0] = 0;
-		// printf("chunking\n");
+		// //printf("chunking\n");
 
 		for( i = 0; i < world_size; i++ )
 		{
@@ -80,7 +80,7 @@ void mat_add(mat_* A, mat_* B, mat_* result)
 		for( i = 0; i < send_counts[rank]; i++ )
 			recieve_array2[i] = 0;
 
-		// printf("scattering\n");
+		// //printf("scattering\n");
 		MPI_Scatterv(
 			A->arr,//no &?
 			send_counts,
@@ -105,14 +105,14 @@ void mat_add(mat_* A, mat_* B, mat_* result)
 			world
 		);
 
-		// printf("chunked array at node %d\n", rank);
+		// //printf("chunked array at node %d\n", rank);
 		// print_array(recieve_array1, send_counts[rank]);
 		// print_array(recieve_array2, send_counts[rank]);
 
 		for( i = 0; i < send_counts[rank]; i++)
 			recieve_array1[i] += recieve_array2[i];
 
-		// printf("gathering\n");
+		// //printf("gathering\n");
 		// print_array(recieve_array1, send_counts[rank]);
 		MPI_Gatherv(
 			recieve_array1,
@@ -130,11 +130,11 @@ void mat_add(mat_* A, mat_* B, mat_* result)
 
 }//end mat_add
 
-void mat_subtract(mat_* A, mat_* B, mat_* result)
+void mat_subtract(Matrix* A, Matrix* B, Matrix* result)
 {
 	if( A->rows != B->rows || A->cols != B->cols)
 	{
-		printf("Operation not possible with those matricies");
+		//printf("Operation not possible with those matricies");
 	}
 	else
 	{
@@ -152,7 +152,7 @@ void mat_subtract(mat_* A, mat_* B, mat_* result)
 
 		int i;
 		//send_counts[0] = 0;
-		// printf("chunking\n");
+		// //printf("chunking\n");
 
 		for( i = 0; i < world_size; i++ )
 		{
@@ -171,7 +171,7 @@ void mat_subtract(mat_* A, mat_* B, mat_* result)
 		for( i = 0; i < send_counts[rank]; i++ )
 			recieve_array2[i] = 0;
 
-		// printf("scattering\n");
+		// //printf("scattering\n");
 		MPI_Scatterv(
 			A->arr,//no &?
 			send_counts,
@@ -196,14 +196,14 @@ void mat_subtract(mat_* A, mat_* B, mat_* result)
 			world
 		);
 
-		// printf("chunked array at node %d\n", rank);
+		// //printf("chunked array at node %d\n", rank);
 		// print_array(recieve_array1, send_counts[rank]);
 		// print_array(recieve_array2, send_counts[rank]);
 
 		for( i = 0; i < send_counts[rank]; i++)
 			recieve_array1[i] -= recieve_array2[i];
 
-		// printf("gathering\n");
+		// //printf("gathering\n");
 		// print_array(recieve_array1, send_counts[rank]);
 		MPI_Gatherv(
 			recieve_array1,
@@ -221,8 +221,7 @@ void mat_subtract(mat_* A, mat_* B, mat_* result)
 
 }//end mat_subtract
 
-void mat_multiply(mat_* A, mat_* B, mat_* C){
-
+void mat_multiply(Matrix* A, Matrix* B, Matrix* C){
 
 	MPI_Comm world = MPI_COMM_WORLD;
 	int rank, world_size;
@@ -235,10 +234,10 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 		int row[A->rows];
 		int col[A->rows];
 		for(m = 0; m < C->rows; m++){
-			//printf("Outer Loop:%d\n", rank);
-			//printf("i = %d, C -> rows = %d\n", i, C->rows);
+			////printf("Outer Loop:%d\n", rank);
+			////printf("i = %d, C -> rows = %d\n", i, C->rows);
 			for(j = 0; j < C->cols; j++){
-				//printf("Inner Loop%d\n", rank);
+				////printf("Inner Loop%d\n", rank);
 				for(k = 0; k < A->rows; k++){
 					row[k] = A->arr[(m*A->cols)+k];
 					col[k] = B->arr[j+(k*A->cols)];
@@ -287,7 +286,7 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 					0,
 					world
 				);
-				//printf("chunked arrays at node %d\n", rank);
+				////printf("chunked arrays at node %d\n", rank);
 				//print_array(recieve_array1, send_counts[rank]);
 				//print_array(recieve_array2, send_counts[rank]);
 
@@ -296,7 +295,7 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 					pip += recieve_array1[i] * recieve_array2[i];
 
 				int fip = 0;
-				//printf("Before Reduce\n");
+				////printf("Before Reduce\n");
 				MPI_Reduce(
 					&pip,
 					&fip,
@@ -307,20 +306,38 @@ void mat_multiply(mat_* A, mat_* B, mat_* C){
 					world
 				);
 				//if(rank == 0)
-					//printf("fip = %d\n", fip);
+					////printf("fip = %d\n", fip);
 
 
 				if(rank == 0)
-					//printf("m = %d, j = %d, fip = %d\n", m, j, fip);
+					////printf("m = %d, j = %d, fip = %d\n", m, j, fip);
 					ACCESS(C,m,j) = fip;
 			}
 		}
 	}else{
-		printf("Matrix Multiplication is not valid on this set of matrices.\n");
+		//printf("Matrix Multiplication is not valid on this set of matrices.\n");
 	}
 }//end mat_multipy
 
-void mat_transpose (mat_* A){
+void bycol_mat_mult(Matrix* A, Matrix* B, Matrix* C)
+{
+	MPI_Comm world = MPI_COMM_WORLD;
+	int rank, world_size;
+	MPI_Comm_rank(world, &rank);
+	MPI_Comm_size(world, &world_size);
+
+
+	if(A->cols == B->rows && A->rows == B->cols && A->rows == C->rows && B->cols == C->cols)
+	{
+		int i;
+		for(i = 0; i < A->cols; i += A->cols / world_size)
+		{
+
+
+		}
+	}
+}
+void mat_transpose (Matrix* A){
 	int i,j,swap;
 	for(i = 1; i < A->cols; i++){
 		for(j = 0; j < i; j++){
@@ -331,56 +348,58 @@ void mat_transpose (mat_* A){
 	}
 }
 
-int main(){
+int main(int argc, char** argv){
+
+	int size = atoi(argv[1]);
 	MPI_Init(NULL, NULL);
 	MPI_Comm world = MPI_COMM_WORLD;
 	int rank, world_size;
 	MPI_Comm_rank(world, &rank);
 	srand(time(0));
 
-	struct mat_ A;
-	mat_init(&A, 4, 4);
-	if( rank == 0 )
-		mat_print(&A);
+	struct Matrix A;
+	mat_init(&A, size, size);
+	if( rank == 0 ){}
+		//mat_print(&A);
 
-	struct mat_ B;
-	mat_init(&B, 4, 4);
-	if( rank == 0 )
-		mat_print(&B);
+	struct Matrix B;
+	mat_init(&B, size, size);
+	if( rank == 0 ){}
+		//mat_print(&B);
 
-	struct mat_ C;
-	mat_init(&C, 4, 4);
+	struct Matrix C;
+	mat_init(&C, size, size);
 
 	mat_add(&A, &B, &C);
 	if( rank == 0 )
 	{
-		printf("Addition:\n");
-		mat_print(&C);
+		//printf("Addition:\n");
+		////mat_print(&C);
 	}
 
 	mat_subtract(&A, &B, &C);
 	if( rank == 0 )
 	{
-		printf("Subtraction:\n");
-		mat_print(&C);
+		//printf("Subtraction:\n");
+		//mat_print(&C);
 	}
 
 	mat_multiply(&A, &B, &C);
 	if( rank == 0 )
 	{
-		printf("Multiplication:\n");
-		mat_print(&C);
+		//printf("Multiplication:\n");
+		//mat_print(&C);
 	}
 	mat_transpose(&C);
 	if( rank == 0 )
 	{
-		printf("Transpose:\n");
-		mat_print(&C);
+		//printf("Transpose:\n");
+		//mat_print(&C);
 	}
 	free(A.arr);
 	free(B.arr);
 	free(C.arr);
 
 	MPI_Finalize();
-	return 0;
+	exit(0);
 }
