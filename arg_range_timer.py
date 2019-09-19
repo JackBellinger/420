@@ -16,7 +16,7 @@ parser.add_argument('-s', '--step-size', type=int, default=1, dest='step_size',
         help='the step size of the range')
 parser.add_argument('-o', '--step-op', type=str, choices=['+', '*', '^'], default="+", dest='step_op',
         help='the operation to apply to the arg ie += step_size or *= step size')
-parser.add_argument('-p', '--procs', type=int, nargs=2 dest='nprocs', default=[2,4],
+parser.add_argument('-p', '--procs', type=int, nargs=2, dest='nprocs', default=[2,4],
         help='the number of processors to use for mpi')
 
 args = parser.parse_args()
@@ -37,23 +37,20 @@ while i < args.range1[1]:
 print(arg_seq)
 
 all_times = []
-procs = [i for i in range(args.nprocs[0], args.nprocs[1])]
+procs = [i for i in range(args.nprocs[0], args.nprocs[1]+1)]
 for n in procs:
     times = []
     for arg in arg_seq:
         start = time.time()
-        command_line = ['mpiexec', '-n', str(args.nprocs), './'+args.exe, str(arg)]
+        command_line = ['mpiexec', '-n', str(n), './'+args.exe, str(arg)]
         p = subprocess.Popen(command_line).wait()#call the executable synchronously
         end = time.time()
         times.append(end - start)
     all_times.append(times)
-    plt.plot(arg_seq, all_times, 'ro', label=f"{n} Nodes")
-
-print(times)
-
-for i in procs:
+    plt.plot(arg_seq, times, label=f"{n} Nodes")
 
 plt.ylabel('Execution time')
 plt.xlabel('Input argument')
 #plt.axis([])
+plt.legend()
 plt.show()
