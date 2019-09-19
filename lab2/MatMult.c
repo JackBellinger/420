@@ -16,15 +16,15 @@ int main(int argc, char** argv){
 	switch(argc)
 	{
 		case 6:
-			int print = atoi(argv[5]);
+			print = atoi(argv[5]);
 		case 5:
-			int randmax = atoi(argv[4]);
+			randmax = atoi(argv[4]);
 		case 4:
-			int cols2 = atoi(argv[3]);
+			cols2 = atoi(argv[3]);
 		case 3:
-			int cols1rows2 = atoi(argv[2]);
+			cols1rows2 = atoi(argv[2]);
 		case 2:
-			int rows1 = atoi(argv[1]);
+			rows1 = atoi(argv[1]);
 	}
 	if( !cols1rows2 )
 		cols1rows2 = rows1;
