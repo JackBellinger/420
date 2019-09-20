@@ -281,7 +281,79 @@ void mat_multiply (Matrix* A, Matrix* B, Matrix* C){
 			printf("Matrix Multiplication is not valid on this set of matrices.\n");
 	}
 }//end mat_multiply
+void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
+	MPI_Comm world = MPI_COMM_WORLD;
+	int rank, world_size;
+	MPI_Comm_rank(world, &rank);
+	MPI_Comm_size(world, &world_size);
 
+	if(A->cols == B->rows && A->rows == C->rows && B->cols == C->cols){
+		mat_inplace_transpose(&B);
+		int i,j,k,m;
+
+		int side_len = A->cols;
+		int chunk_size = (side_len / (world_size)) * side_len;
+		int leftovers = ((side_len % world_size) + chunk_size) * side_len;
+		int send_counts[world_size];
+		int displs[world_size];
+
+		for(i = 0; i < world_size; i++){
+			displs[i] = i * (chunk_size);
+			if( i == world_size - 1)
+				send_counts[i] = leftovers;
+			else
+				send_counts[i] = chunk_size;
+		}
+		int recieve_array1[send_counts[rank]];
+		for(i = 0; i < send_counts[rank]; i++ )
+			recieve_array1[i] = 0;
+
+		int recieve_array2[send_counts[rank]];
+		for(i = 0; i < send_counts[rank]; i++ )
+			recieve_array2[i] = 0;
+
+		MPI_Scatterv(
+			A,
+			send_counts,
+			displs,
+			MPI_INT,
+			recieve_array1,
+			send_counts[rank],
+			MPI_INT,
+			0,
+			world
+		);
+
+		MPI_Scatterv(
+			B,
+			send_counts,
+			displs,
+			MPI_INT,
+			recieve_array2,
+			send_counts[rank],
+			MPI_INT,
+			0,
+			world
+		);
+
+		int pip = 0;
+		for( i = 0; i < send_counts[rank]; i++)
+			pip += recieve_array1[i] * recieve_array2[i];
+
+		int fip = 0;
+		MPI_Reduce(
+			&pip,
+			&fip,
+			1,
+			MPI_INT,
+			MPI_SUM,
+			0,
+			world
+		);
+		if(rank == 0)
+			ACCESS(C,m,j) = fip;
+	}
+}
 void mat_transpose(Matrix* A, Matrix* B){
 	if(A->rows == B->cols && A->cols == B->rows){
 		int i, j;
@@ -292,4 +364,15 @@ void mat_transpose(Matrix* A, Matrix* B){
 		}
 	}else
 		printf("Matrix Transpose is not valid on this set of matricies.\n");
+}//end mat_transpose
+
+void mat_inplace_transpose(Matrix* A){
+	int i, j;
+	for(i = 0; i < A->rows; i++){
+		for(j = i; j < A->cols; j++){
+			int x = ACCESS(A,i,j);
+			ACCESS(A,i,j) = ACCESS(A,j,i);
+			ACCESS(A, j, i) = x;
+		}
+	}
 }//end mat_transpose
