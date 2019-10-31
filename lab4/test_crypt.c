@@ -4,11 +4,14 @@
 #include <crypt.h>
 int main()
 {
-    printf("testpassword: %s\n", crypt("testpassword", "$5$ab$"));
+    printf("1testpassword: %s\n", crypt("1testpassword", "$1$ab$"));
 
-    printf("testpassword0: %s\n", crypt("testpassword\0", "$5$ab$"));
-
-    printf("testpassword\\n: %s\n", crypt("testpassword\n", "$5$ab$"));
+    printf("testpassword2: %s\n", crypt("testpassword2", "$1$ab$"));
 
     return 0;
 }
+
+/*
+1testpassword:$1$ab$pB70lXqwCgb5UsfmZSxEQ0
+testpassword2:$1$ab$cItnXSJ/K7kB0mF6AuTpl0
+*/

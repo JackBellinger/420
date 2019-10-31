@@ -15,7 +15,7 @@ int num_words = 235886;
 
 void print_char_vals(char* x)
 {
-	printf("printing\n");
+	printf("printing: %s\n", x);
 	int i;
 	for(i = 0; i < strlen(x); i++)
 		printf("%d ", x[i]);
@@ -172,15 +172,13 @@ int main(int argc, char** argv)
 		strcpy(word2, word+10);
 		//int word_len = strlen(word2);
 
-		char* found = NULL;
 		word_num++;
 
 		//skip checking the word testpassword if it's not on the first password
 		if(pass_num != 0 && word_num == 1)
 			continue;
 
-		word[word_len-1] = 0;
-		printf("checking %s\n", word+10);
+		//printf("checking %s\n", word+10);
 		int ffix;
 		for(ffix = -1; ffix < 1000; ffix++)//10000000000 = max
 		{
@@ -189,15 +187,20 @@ int main(int argc, char** argv)
 			if(ffix == -1)
 				fix_len = 0;
 			if(ffix == 0)
+			{
 				word2[word_len] = '0';
+				word2[word_len+1] = 0;
+			}
 			if(ffix > 0)
 			{
 				int i = 9;
-				while(word[i] == '9' && i > 7)
+				while(word[i] == '9' && i >= 7)
 						word[i--] = '0';
+				if( word[i] == 0)
+					word[i] = '0';
 				word[i]++;
 				i = word_len + fix_len - 1;
-				while(word2[i] == '9' && i > word_len-1)
+				while(word2[i] == '9' && i > word_len)
 						word2[i--] = '0';
 				if(word2[i] == 0)// && word2[i] == '9'+1)
 				{
@@ -210,9 +213,7 @@ int main(int argc, char** argv)
 				word2[i]++;
 			}
 
-			//printf("checking %s\n", word2);
-			// print_char_vals(word2);
-			// printf("\n\n");
+
 
 			char* pre_result = crypt(word+10-fix_len, "$1$ab$");
 			char* suf_result = crypt(word2, "$1$ab$");
@@ -220,47 +221,20 @@ int main(int argc, char** argv)
 			int u;
 			for(u = 0; u < num_users; u++)
 			{
-				found = NULL;
-				//printf("checking against %s\n", user_pass_hashes[u]);
-
 				if(pre_result)
-				{
-					printf("prefix %s\n", word+10-fix_len);
-					// if(rank == 0 && strcmp(prefixed, "testpassword") == 0)
-					// {	printf("cmp %d\n", strcmp(user_pass_hashes[u], pre_result));
-					// 	printf("pass hash \n%s\n%s\n", user_pass_hashes[u], pre_result);
-					//}
 					if(strcmp(user_pass_hashes[u], pre_result) == 0)
-					{
-						printf("Found!\n");
-						found = malloc(strlen(word+10-fix_len));
-						strcpy(found, word+10-fix_len);
-					}
-				}else{
-					//printf("prefix crypt error%s, args: str: %s salt: %s\n", strerror(errno), prefixed, "$1$ab$");
-					exit(EXIT_FAILURE);
-				}
+						printf("Found! %s's password is %s\nhash: %s\n", user_names[u], word+10-fix_len, pre_result);
 
 				if(suf_result)
-				{
-					//printf("suffix: %s hashed to %s\n", word2, suf_result);
-					if(strcmp(suf_result, user_pass_hashes[u]) == 0)
-					{
-						found = malloc(strlen(word2));
-						strcpy(found, word2);
-					}
-				}else{
-					printf("prefix: %s hashed to %s\n", word2, suf_result);
-					printf("suffix crypt error%s, args: str: %s salt: %s\n", strerror(errno), word2, "$1$ab$");
-					exit(EXIT_FAILURE);
-				}
-				if(found)
-					printf("%s's password is %s\n", user_names[u], found);
+					if(strcmp(user_pass_hashes[u], suf_result) == 0)//{
+						printf("Found! %s's password is %s\nhash: %s\n", user_names[u], word2, suf_result);
+						// print_char_vals(word+10-fix_len);
+						// printf("\n");
+						// print_char_vals(word2);
+						// printf("\n");}
 			}
 		}
 
-		if(found)
-			free(found);
 		//break;//if you want to check only one word
 	}
 

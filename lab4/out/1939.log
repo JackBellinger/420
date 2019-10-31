@@ -1,0 +1,48 @@
+/var/lib/slurmd/job01939/slurm_script: line 12: module: command not found
+
+username: george
+$id$salt: $1$ab$
+password hash: $1$ab$tYl84YhDM6bmCOuCusTKS.
+
+username: maria
+$id$salt: $1$ab$
+password hash: $1$ab$DC1ifnjzzu8Za5qEt96Kq0
+
+username: alice
+$id$salt: $1$ab$
+password hash: $1$ab$DqPMoPPboZ2HTH7RfiqQs.
+
+username: bob
+$id$salt: $1$ab$
+password hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/
+
+username: despickler
+$id$salt: $1$ab$
+password hash: $1$ab$FPyWVGc2x83IsQ7.q775k1
+
+username: richard
+$id$salt: $1$ab$
+password hash: $1$ab$T/Cabrtf2TgOYXhZFlRct/
+
+username: rmshifler
+$id$salt: $1$ab$
+password hash: $1$ab$/rOLL5LFn/3ZIa2TFnN4G.
+
+username: yxjing
+$id$salt: $1$ab$
+password hash: $1$ab$N9t.xxEuc93HGa.twsZuP.
+
+username: jtanderson
+$id$salt: $1$ab$
+password hash: $1$ab$Po1AuQSRCorWXHi8cIOhK/
+
+username: bfpierce
+$id$salt: $1$ab$
+password hash: $1$ab$s2uqC2lMivvj9IX5PQ8KO/
+
+username: rmstallman
+$id$salt: $1$ab$
+password hash: $1$ab$tThrUGNaCZBr224TYwxw2.
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 1939.0 ON hpcl2-6 CANCELLED AT 2019-10-31T01:51:26 ***
+slurmstepd: error: *** JOB 1939 ON hpcl2-6 CANCELLED AT 2019-10-31T01:51:26 ***
