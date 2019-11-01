@@ -238,7 +238,18 @@ int main(int argc, char** argv)
 
 		//break;//if you want to check only one word
 	}
-
+	
+	for(i = 0; i < num_users; i++) {
+		free(user_names[i]);
+		free(user_pass_hashes[i]);
+		free(user_passwords[i]);
+	}
+	free(user_names);
+	free(user_pass_hashes);
+	free(user_passwords);
+	free(word);
+	free(word2);
+	
 	exit(EXIT_SUCCESS);
 
 	MPI_Finalize();
