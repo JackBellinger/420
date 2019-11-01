@@ -1,4 +1,3 @@
-/var/lib/slurmd/job01940/slurm_script: line 12: module: command not found
 
 username: george
 $id$salt: $1$ab$
@@ -47,7 +46,21 @@ Found! bob's password is fluffy
 hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/
 Found! bob's password is fluffy
 hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/
-Found! maria's password is 120password
-hash: $1$ab$DC1ifnjzzu8Za5qEt96Kq0
+Found! rmshifler's password is 1genius
+hash: $1$ab$/rOLL5LFn/3ZIa2TFnN4G.
 Found! maria's password is password123
 hash: $1$ab$DC1ifnjzzu8Za5qEt96Kq0
+Found! george's password is red32
+hash: $1$ab$tYl84YhDM6bmCOuCusTKS.
+Found! jtanderson's password is 100nodes
+hash: $1$ab$Po1AuQSRCorWXHi8cIOhK/
+Found! alice's password is 99puppy
+hash: $1$ab$DqPMoPPboZ2HTH7RfiqQs.
+Found! rmshifler's password is 1genius
+hash: $1$ab$/rOLL5LFn/3ZIa2TFnN4G.
+Found! maria's password is password123
+hash: $1$ab$DC1ifnjzzu8Za5qEt96Kq0
+Found! bob's password is fluffy
+hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/
+Found! bob's password is fluffy
+hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/

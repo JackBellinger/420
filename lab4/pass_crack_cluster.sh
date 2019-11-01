@@ -3,7 +3,7 @@
 # File: pass_crack_cluster.sh
 
 #SBATCH --job-name=jackson-sean-pass-crack
-#SBATCH --nodes=10
+#SBATCH --nodes=5
 #SBATCH --ntasks-per-node=12
 ##SBATCH --mem=8gb
 #SBATCH --time=24:00:00    # Time limit in the form hh:mm:ss
