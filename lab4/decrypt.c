@@ -178,7 +178,6 @@ int main(int argc, char** argv)
 		if(pass_num != 0 && word_num == 1)
 			continue;
 
-		//printf("checking %s\n", word+10);
 		int ffix;
 		for(ffix = -1; ffix < 1000; ffix++)//10000000000 = max
 		{
@@ -213,18 +212,21 @@ int main(int argc, char** argv)
 				word2[i]++;
 			}
 
-
+			// print_char_vals(word+10-fix_len);
+			// printf("\n");
+			// print_char_vals(word2);
+			// printf("\n");
 
 			char* pre_result = crypt(word+10-fix_len, "$1$ab$");
-			char* suf_result = crypt(word2, "$1$ab$");
 
 			int u;
 			for(u = 0; u < num_users; u++)
-			{
 				if(pre_result)
 					if(strcmp(user_pass_hashes[u], pre_result) == 0)
 						printf("Found! %s's password is %s\nhash: %s\n", user_names[u], word+10-fix_len, pre_result);
 
+			char* suf_result = crypt(word2, "$1$ab$");
+			for(u = 0; u < num_users; u++)
 				if(suf_result)
 					if(strcmp(user_pass_hashes[u], suf_result) == 0)//{
 						printf("Found! %s's password is %s\nhash: %s\n", user_names[u], word2, suf_result);
@@ -232,25 +234,11 @@ int main(int argc, char** argv)
 						// printf("\n");
 						// print_char_vals(word2);
 						// printf("\n");}
-			}
 		}
 
 		//break;//if you want to check only one word
 	}
 
-
-
-
-
-
-
-	// fclose(words_fp);
-	// if (word)
-	// 	free(word);
-	//
-	// fclose(fp);
-	// if (line)
-	// 	free(line);
 	exit(EXIT_SUCCESS);
 
 	MPI_Finalize();

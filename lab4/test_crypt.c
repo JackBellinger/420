@@ -4,9 +4,9 @@
 #include <crypt.h>
 int main()
 {
-    printf("1testpassword: %s\n", crypt("1testpassword", "$1$ab$"));
+    printf("120password: %s\n", crypt("120password", "$1$ab$"));
 
-    printf("testpassword2: %s\n", crypt("testpassword2", "$1$ab$"));
+    printf("password123: %s\n", crypt("password123", "$1$ab$"));
 
     return 0;
 }
