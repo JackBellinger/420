@@ -9,13 +9,13 @@
 
 typedef struct Matrix{
 	int rows, cols;
-	float* arr;
+	double* arr;
 } Matrix;
 
 void mat_init(Matrix* A, int r, int c, int max_rand){
 	A->rows = r;
 	A->cols = c;
-	A->arr = calloc(r*c,sizeof(float));
+	A->arr = calloc(r*c,sizeof(double));
 
 	int i,j;
 	for(i=0; i<r; i++)
@@ -49,7 +49,7 @@ void mat_inplace_transpose(Matrix* A){
 	int i, j;
 	for(i = 0; i < A->rows; i++){
 		for(j = i; j < A->cols; j++){
-			float x = ACCESS(A,i,j);
+			double x = ACCESS(A,i,j);
 			ACCESS(A,i,j) = ACCESS(A,j,i);
 			ACCESS(A, j, i) = x;
 		}
@@ -228,8 +228,8 @@ void mat_multiply (Matrix* A, Matrix* B, Matrix* C){
 
 	if(A->cols == B->rows && A->rows == C->rows && B->cols == C->cols){
 		int i,j,k,m;
-		int row[A->cols];
-		int col[A->cols];
+		double row[A->cols];
+		double col[A->cols];
 		for(m = 0; m < C->rows; m++){
 			for(j = 0; j < C->cols; j++){
 				for(k = 0; k < A->cols; k++){
@@ -249,11 +249,11 @@ void mat_multiply (Matrix* A, Matrix* B, Matrix* C){
 					else
 						send_counts[i] = chunk_size;
 				}
-				int recieve_array1[send_counts[rank]];
+				double recieve_array1[send_counts[rank]];
 				for(i = 0; i < send_counts[rank]; i++ )
 					recieve_array1[i] = 0;
 
-				int recieve_array2[send_counts[rank]];
+				double recieve_array2[send_counts[rank]];
 				for(i = 0; i < send_counts[rank]; i++ )
 					recieve_array2[i] = 0;
 
@@ -261,10 +261,10 @@ void mat_multiply (Matrix* A, Matrix* B, Matrix* C){
 					row,
 					send_counts,
 					displs,
-					MPI_INT,
+					MPI_DOUBLE,
 					recieve_array1,
 					send_counts[rank],
-					MPI_INT,
+					MPI_DOUBLE,
 					0,
 					world
 				);
@@ -273,24 +273,24 @@ void mat_multiply (Matrix* A, Matrix* B, Matrix* C){
 					col,
 					send_counts,
 					displs,
-					MPI_INT,
+					MPI_DOUBLE,
 					recieve_array2,
 					send_counts[rank],
-					MPI_INT,
+					MPI_DOUBLE,
 					0,
 					world
 				);
 
-				int pip = 0;
+				double pip = 0;
 				for( i = 0; i < send_counts[rank]; i++)
 					pip += recieve_array1[i] * recieve_array2[i];
 
-				int fip = 0;
+				double fip = 0;
 				MPI_Reduce(
 					&pip,
 					&fip,
 					1,
-					MPI_INT,
+					MPI_DOUBLE,
 					MPI_SUM,
 					0,
 					world
@@ -327,11 +327,11 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 			else
 				send_counts[i] = chunk_size;
 		}
-		int recieve_array1[send_counts[rank]];
+		double recieve_array1[send_counts[rank]];
 		for(i = 0; i < send_counts[rank]; i++ )
 			recieve_array1[i] = 0;
 
-		int recieve_array2[send_counts[rank]];
+		double recieve_array2[send_counts[rank]];
 		for(i = 0; i < send_counts[rank]; i++ )
 			recieve_array2[i] = 0;
 
@@ -339,10 +339,10 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 			A,
 			send_counts,
 			displs,
-			MPI_INT,
+			MPI_DOUBLE,
 			recieve_array1,
 			send_counts[rank],
-			MPI_INT,
+			MPI_DOUBLE,
 			0,
 			world
 		);
@@ -351,24 +351,24 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 			B,
 			send_counts,
 			displs,
-			MPI_INT,
+			MPI_DOUBLE,
 			recieve_array2,
 			send_counts[rank],
-			MPI_INT,
+			MPI_DOUBLE,
 			0,
 			world
 		);
 
-		int pip = 0;
+		double pip = 0;
 		for( i = 0; i < send_counts[rank]; i++)
 			pip += recieve_array1[i] * recieve_array2[i];
 
-		int fip = 0;
+		double fip = 0;
 		MPI_Reduce(
 			&pip,
 			&fip,
 			1,
-			MPI_INT,
+			MPI_DOUBLE,
 			MPI_SUM,
 			0,
 			world
@@ -381,30 +381,37 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 void mat_equals(Matrix* A, Matrix* B){
 	if(A->rows == B->rows && A->cols == B->cols){
 		int i, j;
-		for(i = 0; i < A->rows; i++){
-			for(j = 0; j < A->cols; j++){
+		for(i = 0; i < A->cols; i++){
+			for(j = 0; j < A->rows; j++)
 				ACCESS(A,i,j) = ACCESS(B,i,j);
-			}
 		}
 	}else
 		printf("Matrix equals is not valid on this set of matricies.\n");
 }//end mat_equals
 
-float norm2(Matrix* A){
-	float sum = 0;
+double norm2(Matrix* A){
+	double sum = 0;
 	int i;
-	for(i = 0; i < A->cols; i++){
-		sum += pow(ACCESS(A,0,i),2);
+	for(i = 0; i < A->rows; i++){
+		sum += ACCESS(A, i, 0) * ACCESS(A, i, 0);
 	}
-	return (float)sqrt(sum);
+	return sqrt(sum);
 }//end norm2
 
-float normalize(Matrix* A){
-	float norm;
+double normalize(Matrix* A){
+	double norm;
 	norm = norm2(A);
 	int i;
-	for(i = 0; i < A->cols; i++){ //this is for vectors
-		ACCESS(A,0,i) = ACCESS(A,0,i)/norm;
+	for(i = 0; i < A->rows; i++){ //this is for vectors
+		ACCESS(A, i, 0) = ACCESS(A, i, 0)/norm;
 	}
 	return norm;
 }//end normalize
+
+int t_check(Matrix* A, Matrix* B, double tolerance){
+	int i, bool = 1;
+	for(i = 0; i < A->rows; i++)
+		if(fabs(ACCESS(A, i, 0) - ACCESS(B, i, 0)) < tolerance)
+			bool = 0;
+	return bool;
+}
