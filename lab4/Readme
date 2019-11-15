@@ -10,7 +10,6 @@ Checks both the prefix and suffix at the same time
 Uses character pointer arithmatic, to avoid using sprintf
 
 Theoretical Time Complexity:
-It's big Theta of perfectly parallelized! Ɵ(n/p)
 Best case (n/p)*2002*CrpytTime; where CrpytTime is ~ 202.8 Crypts per node per second
 Worst case ~(n/p)*2002*CrpytTime The worst case is if one processor has more lines to check
 due to them having fewer lines each, but this should still take approximately the same
@@ -18,6 +17,9 @@ amount of time.
 
 Additional Nodes:
 
+When we ran it with 60 nodes, it still took about 6 hours. It's not perfectly divinding it.
+Also, from talking to other students, who used strcpy and didn't use MPI_File_read, theirs ran in 15 minutes - 30 minutes.
+This makes me think that the bottleneck isn't those operations. I think that using MPI_File is actually slower.
 
 
 Brute-Forcing Passwords:
@@ -29,7 +31,7 @@ EX: an arbitrary password of length 10 would take over 133,070,041 years on one 
 
 Real-World Examples:
 
-If people would like to crack passwords over multiple nodes/computers, they can use our 
+If people would like to crack passwords over multiple nodes/computers, they can use our
 code to crack passwords, people might want to get into bank accounts, and those have
 passwords. They would because they can check many passwords in parallel which will help
 them get into many passwords more quickly, which increases their profits.
@@ -39,3 +41,5 @@ Improvements:
 The data might be better distributed if the file was divided up by lines rather than bytes
 and therefore run faster
 Maybe Improve data reuse
+We should have just read in the file sequentially and then used scatterv to distribute it.
+4

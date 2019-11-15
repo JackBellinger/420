@@ -15,7 +15,7 @@ username: bob
 $id$salt: $1$ab$
 password hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/
 
-username: despickler
+username: despicklermpicc -o decrypt decrypt.c -lm -lcrypt
 $id$salt: $1$ab$
 password hash: $1$ab$FPyWVGc2x83IsQ7.q775k1
 
