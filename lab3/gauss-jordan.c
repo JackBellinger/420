@@ -7,19 +7,19 @@
 int gauss_jordan()
 {
 	for(j=1; j<=n; j++)
-    {
-        for(i=1; i<=n; i++)
-        {
-            if(i!=j)
-            {
-                c=A[i][j]/A[j][j];
-                for(k=1; k<=n+1; k++)
-                {
-                    A[i][k]=A[i][k]-c*A[j][k];
-                }
-            }
-        }
-    }
+	{
+		for(i=1; i<=n; i++)
+		{
+			if(i!=j)
+			{
+				c=A[i][j]/A[j][j];
+				for(k=1; k<=n+1; k++)
+				{
+					A[i][k]=A[i][k]-c*A[j][k];
+				}
+			}
+		}
+	}
 }
 int main(int argc, char** argv){
 	MPI_Init(NULL, NULL);

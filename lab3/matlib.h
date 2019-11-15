@@ -376,3 +376,17 @@ void mat_inplace_transpose(Matrix* A){
 		}
 	}
 }//end mat_transpose
+
+void gauss_jordan(Matrix* A, int* b)
+{
+	int r = A->rows;
+	int c = A->cols;
+	int pivot, row, col, i;
+	for(pivot = 0; pivot < c; pivot++)
+	{
+		int* scalings[r];
+		for(i = 0; i < r; i++)
+			scalings[i[ = ACCESS(A, i, k) / ACCESS(A, k, k);
+
+	}
+}

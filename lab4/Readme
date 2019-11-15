@@ -1,6 +1,6 @@
 Readme:
 Lab 4:
-Sean McGee & Jackson Bellinger
+Sean McGee & Jackson Bellinger & Alex Titus
 
 Design Choices:
 
@@ -41,5 +41,6 @@ Improvements:
 The data might be better distributed if the file was divided up by lines rather than bytes
 and therefore run faster
 Maybe Improve data reuse
+<<<<<<< HEAD
 We should have just read in the file sequentially and then used scatterv to distribute it.
 4
