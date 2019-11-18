@@ -305,6 +305,7 @@ void mat_multiply (Matrix* A, Matrix* B, Matrix* C){
 	}
 }//end mat_multiply
 void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
+	//only for square matricies for now
 	MPI_Comm world = MPI_COMM_WORLD;
 	int rank, world_size;
 	MPI_Comm_rank(world, &rank);
@@ -312,11 +313,16 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 
 	if(A->cols == B->rows && A->rows == C->rows && B->cols == C->cols){
 		mat_inplace_transpose(B);
+		puts("Mat A:");
+		mat_print(A);
+		puts("Mat B:");
+		mat_print(B);
 		int i,j,k,m;
 
 		int side_len = A->cols;
-		int chunk_size = (side_len / (world_size)) * side_len;
-		int leftovers = ((side_len % world_size) + chunk_size) * side_len;
+		int chunk_size = (side_len / world_size) * side_len;
+		int leftovers = side_len % world_size + chunk_size;
+
 		int send_counts[world_size];
 		int displs[world_size];
 
@@ -327,6 +333,14 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 			else
 				send_counts[i] = chunk_size;
 		}
+		puts("send counds");
+		for(i = 0; i < world_size; i++)
+			printf("%d ", send_counts[i]);
+		puts("\ndispls");
+		for(i = 0; i < world_size; i++)
+			printf("%d ", displs[i]);
+		puts("");
+
 		double recieve_array1[send_counts[rank]];
 		for(i = 0; i < send_counts[rank]; i++ )
 			recieve_array1[i] = 0;
@@ -336,7 +350,7 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 			recieve_array2[i] = 0;
 
 		MPI_Scatterv(
-			A,
+			A->arr,
 			send_counts,
 			displs,
 			MPI_DOUBLE,
@@ -348,7 +362,7 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 		);
 
 		MPI_Scatterv(
-			B,
+			B->arr,
 			send_counts,
 			displs,
 			MPI_DOUBLE,
@@ -361,7 +375,10 @@ void mat_chunk_multiply (Matrix* A, Matrix* B, Matrix* C){
 
 		double pip = 0;
 		for( i = 0; i < send_counts[rank]; i++)
-			pip += recieve_array1[i] * recieve_array2[i];
+			printf("Node %d: A[%d] = %f\n", rank, i, recieve_array1[i]);
+		for( i = 0; i < send_counts[rank]; i++)
+			printf("Node %d: B[%d] = %f\n", rank, i, recieve_array2[i]);
+			//pip += recieve_array1[i] * recieve_array2[i];
 
 		double fip = 0;
 		MPI_Reduce(

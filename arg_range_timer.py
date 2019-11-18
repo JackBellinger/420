@@ -50,7 +50,7 @@ for n in procs:
     plt.plot(arg_seq, times, label=f"{n} Nodes")
 
 plt.ylabel('Execution time')
-plt.xlabel('Input argument')
+plt.xlabel('Matrix dimension (side length)')
 #plt.axis([])
 plt.legend()
 plt.show()
