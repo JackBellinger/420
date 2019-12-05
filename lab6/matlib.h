@@ -3,7 +3,6 @@
 #include <time.h> // time
 #include <mpi.h> // mpi stuff
 #include <math.h> //math
-
 #define INDEX(n,m,i,j) m*i + j
 #define ACCESS(A,i,j) A->arr[INDEX(A->rows, A->cols, i, j)]
 
@@ -29,7 +28,7 @@ void mat_print(Matrix* A){
 		for(j=0; j<A->cols; j++){
 			printf("%f ", ACCESS(A,i,j));
 		}
-		//printf("\n");
+		printf("\n");
 		puts("");
 	}
 }
@@ -385,8 +384,9 @@ void mat_equals(Matrix* A, Matrix* B){
 			for(j = 0; j < A->rows; j++)
 				ACCESS(A,i,j) = ACCESS(B,i,j);
 		}
-	}else
-		printf("Matrix equals is not valid on this set of matricies.\n");
+	}
+	// else
+	// 	printf("Matrix equals is not valid on this set of matricies.\n");
 }//end mat_equals
 
 double norm2(Matrix* A){

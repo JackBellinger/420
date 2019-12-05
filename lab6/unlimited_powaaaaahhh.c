@@ -1,5 +1,5 @@
 #include <stdlib.h> // rand
-#include <stdio.h> // puts, printf, etc
+#include <stdio.h> // puts, //printf, etc
 #include <time.h> // time
 #include <mpi.h> // mpi
 #include <math.h>
@@ -13,38 +13,38 @@ int main(int argc, char** argv){
 	MPI_Comm_rank(world, &rank);
 	srand(1);
 
-	int n = 4;
+	int n = atoi(argv[1]);
 
 	struct Matrix A, temp, x;
-	mat_init(&A, n, n, 10);
+	mat_init(&A, n, n, 0);
 	mat_init(&x, n, 1, 1);
 	mat_init(&temp, n, 1, 10);
 
-	if(rank == 0){
-		printf("Vector:\n");
-		mat_print(&x);
-		printf("Matrix:\n");
-		mat_print(&A);
-	}
+	// if(rank == 0){
+	// 	//printf("Vector:\n");
+	// 	//mat_print(&x);
+	// 	//printf("Matrix:\n");
+	// 	//mat_print(&A);
+	// }
 
 	int cont = 1;
 	double norm, tolerance = 0.001;//don't increase precision or the scatters block maybe somehow??
 	while(cont){
 		mat_multiply(&A, &x, &temp);
 		norm = normalize(&temp);
-		if(rank == 0)
-			printf("norm is %f\n", norm);
+		//if(rank == 0)
+			//printf("norm is %f\n", norm);
 		cont = t_check(&x, &temp, tolerance);
 		mat_equals(&x, &temp);
 	}
 
-	if(rank == 0){
-		printf("\nEigenvector:\n");
-		mat_print(&temp);
-	}
+	//if(rank == 0){
+		//printf("\nEigenvector:\n");
+		//mat_print(&temp);
+	//}
 	mat_multiply(&A, &x, &temp);
-	if(rank == 0)
-		printf("\nEigenvalue: %f\n", norm2(&temp)/norm2(&x));
+	//if(rank == 0)
+		//printf("\nEigenvalue: %f\n", norm2(&temp)/norm2(&x));
 
 	free(A.arr);
 	free(x.arr);

@@ -1,0 +1,55 @@
+
+username: george
+$id$salt: $1$ab$
+password hash: $1$ab$tYl84YhDM6bmCOuCusTKS.
+
+username: maria
+$id$salt: $1$ab$
+password hash: $1$ab$DC1ifnjzzu8Za5qEt96Kq0
+
+username: alice
+$id$salt: $1$ab$
+password hash: $1$ab$DqPMoPPboZ2HTH7RfiqQs.
+
+username: bob
+$id$salt: $1$ab$
+password hash: $1$ab$0I4CGceZU1wOu9PO3qn2p/
+
+username: despickler
+$id$salt: $1$ab$
+password hash: $1$ab$FPyWVGc2x83IsQ7.q775k1
+
+username: richard
+$id$salt: $1$ab$
+password hash: $1$ab$T/Cabrtf2TgOYXhZFlRct/
+
+username: rmshifler
+$id$salt: $1$ab$
+password hash: $1$ab$/rOLL5LFn/3ZIa2TFnN4G.
+
+username: yxjing
+$id$salt: $1$ab$
+password hash: $1$ab$N9t.xxEuc93HGa.twsZuP.
+
+username: jtanderson
+$id$salt: $1$ab$
+password hash: $1$ab$Po1AuQSRCorWXHi8cIOhK/
+
+username: bfpierce
+$id$salt: $1$ab$
+password hash: $1$ab$s2uqC2lMivvj9IX5PQ8KO/
+
+username: rmstallman
+$id$salt: $1$ab$
+password hash: $1$ab$tThrUGNaCZBr224TYwxw2.
+Found! george's password is red32
+hash: $1$ab$tYl84YhDM6bmCOuCusTKS.
+srun: error: _server_read: fd 20 error reading header: Connection reset by peer
+srun: error: Aborting, io error and missing step on node 7
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 2465.0 ON hpcl2-6 CANCELLED AT 2019-12-02T11:58:07 ***
+[mpiexec@hpcl2-6] control_cb (pm/pmiserv/pmiserv_cb.c:200): assert (!closed) failed
+[mpiexec@hpcl2-6] HYDT_dmxu_poll_wait_for_event (tools/demux/demux_poll.c:76): callback returned error status
+[mpiexec@hpcl2-6] HYD_pmci_wait_for_completion (pm/pmiserv/pmiserv_pmci.c:198): error waiting for event
+[mpiexec@hpcl2-6] main (ui/mpich/mpiexec.c:344): process manager error waiting for completion
+mpirun ./decrypt  0.01s user 0.01s system 0% cpu 13:55:57.82 total

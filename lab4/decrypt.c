@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
 	MPI_File_open(
 		world,
-		"words",
+		"newoutputwords",
 		MPI_MODE_RDONLY,
 		MPI_INFO_NULL,
 		&mpi_words_file
